@@ -1,108 +1,108 @@
+import tkinter as tk
+from tkinter import ttk
 import turtle
 
+def desenhar_forma():
+    t.clear()
+    t.penup()
+    t.goto(0, -50)  # centraliza o desenho
+    t.pendown()
+    t.fillcolor(cor_escolhida.get())
+    t.begin_fill()
 
-screen = turtle.Screen() 
-screen.setup(width=800, height=600) 
-screen.title("Programa de Desenho Interativo com Turtle") 
-screen.bgcolor("lightgray") 
+    forma = forma_escolhida.get()
 
-pen = turtle.Turtle() 
-pen.speed(3)
-pen.penup()
-pen.goto(0, 0)
-pen.pendown() 
-pen.hideturtle() 
+    if forma == "Triângulo":
+        for _ in range(3):
+            t.forward(100)
+            t.left(120)
+    elif forma == "Quadrado":
+        for _ in range(4):
+            t.forward(100)
+            t.left(90)
+    elif forma == "Círculo":
+        t.circle(50)
 
-def draw_square(size, color):
-    pen.clear()
-    pen.penup()
-    pen.goto(-size / 2, size / 2)
-    pen.pendown()
-    pen.fillcolor(color)
-    pen.begin_fill()
-    for _ in range(4):
-        pen.forward(size)
-        pen.right(90)
-    pen.end_fill()
+    t.end_fill()
 
-def draw_triangle(size, color):
-    pen.clear()
-    pen.penup()
-    pen.goto(-size / 2, -size * (3**0.5) / 6)
-    pen.pendown()
-    pen.fillcolor(color)
-    pen.begin_fill()
-    for _ in range(3):
-        pen.forward(size)
-        pen.left(120)
-    pen.end_fill()
+def limpar_desenho():
+    t.clear()
 
-def draw_circle(radius, color):
-    pen.clear()
-    pen.penup()
-    pen.goto(0, -radius)
-    pen.pendown()
-    pen.fillcolor(color)
-    pen.begin_fill()
-    pen.circle(radius)
-    pen.end_fill()
+def pre_visualizar():
+    canvas_preview.delete("all")
+    cor = cor_escolhida.get()
 
-def get_shape_choice():
-    while True:
-        try:
-            choice = int(screen.textinput("Seleção de Forma",
-                                         "Selecione uma forma:\n1 para Quadrado\n2 para Triângulo\n3 para Círculo"))
-            if choice in [1, 2, 3]:
-                return choice
-            else:
-                screen.textinput("Erro", "Opção inválida. Por favor, digite 1, 2 ou 3.")
-        except (ValueError, TypeError):
-            screen.textinput("Erro", "Entrada inválida. Por favor, digite um número.")
+    if forma_escolhida.get() == "Triângulo":
+        canvas_preview.create_polygon(75, 20, 20, 130, 130, 130, fill=cor, outline="black")
+    elif forma_escolhida.get() == "Quadrado":
+        canvas_preview.create_rectangle(40, 40, 120, 120, fill=cor, outline="black")
+    elif forma_escolhida.get() == "Círculo":
+        canvas_preview.create_oval(40, 40, 120, 120, fill=cor, outline="black")
 
-def get_color_choice():
-    color_map = {
-        "vermelho": "red", "red": "red",
-        "azul": "blue", "blue": "blue",
-        "verde": "green", "green": "green",
-        "amarelo": "yellow", "yellow": "yellow",
-        "roxo": "purple", "purple": "purple",
-        "laranja": "orange", "orange": "orange"
-    }
+janela = tk.Tk()
+janela.title("Desenho Interativo")
+janela.geometry("600x700")
 
-    while True:
-        color_name_input = screen.textinput("Seleção de Cor",
-                                            "Escolha uma cor (vermelho, azul, verde, amarelo, roxo, laranja):").lower()
+forma_escolhida = tk.StringVar(value="Triângulo")
+cor_escolhida = tk.StringVar(value="blue")
 
-        if color_name_input in color_map:
-            return color_map[color_name_input]
-        else:
-            screen.textinput("Erro", "Cor inválida. Escolha entre vermelho, azul, verde, amarelo, roxo, laranja.")
+frame_principal = ttk.Frame(janela)
+frame_principal.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
 
-def main_loop():
-    pen.pencolor("black")
-    pen.pensize(2)
+label_instrucao = ttk.Label(frame_principal, text="Escolha uma forma e uma cor:", font=("Arial", 14))
+label_instrucao.pack(pady=10)
+label_instrucao.pack_configure(anchor="center")
 
-    while True:
-        shape_choice = get_shape_choice()
-        color_choice = get_color_choice()
+# Frame superior para seleção e pré-visualização lado a lado, centralizado
+frame_superior = ttk.Frame(frame_principal)
+frame_superior.pack(pady=10)
+frame_superior.pack_configure(anchor="center")
 
-        if shape_choice == 1:
-            draw_square(150, color_choice)
-        elif shape_choice == 2:
-            draw_triangle(180, color_choice)
-        elif shape_choice == 3:
-            draw_circle(75, color_choice)
-        else:
-            screen.textinput("Erro Fatal", "Uma escolha de forma inesperada ocorreu.")
+frame_formas = ttk.LabelFrame(frame_superior, text="Formas")
+frame_formas.pack(side=tk.LEFT, padx=20)
+frame_formas.pack_configure(anchor="center")
 
-        continue_drawing = screen.textinput("Desenho Concluído!",
-                                            "Desenho concluído! Deseja fazer outro desenho?\nDigite 'sim' para continuar ou qualquer outra coisa para sair.").lower()
+formas = ["Triângulo", "Quadrado", "Círculo"]
+for forma in formas:
+    ttk.Radiobutton(frame_formas, text=forma, variable=forma_escolhida, value=forma).pack(anchor="w")
 
-        if continue_drawing != 'sim':
-            break
+frame_cores = ttk.LabelFrame(frame_superior, text="Cores")
+frame_cores.pack(side=tk.LEFT, padx=20)
+frame_cores.pack_configure(anchor="center")
 
+cores = [("Azul", "blue"), ("Vermelho", "red"), ("Amarelo", "yellow")]
+for nome, valor in cores:
+    ttk.Radiobutton(frame_cores, text=nome, variable=cor_escolhida, value=valor).pack(anchor="w")
 
-if __name__ == "__main__":
-    main_loop()
-    screen.textinput("Saindo", "Obrigado por usar o programa de desenho! Pressione OK para fechar.")
-    screen.bye()
+canvas_preview = tk.Canvas(frame_superior, width=150, height=150, bg="white")
+canvas_preview.pack(side=tk.LEFT, padx=20)
+
+# Frame para área de desenho Turtle, abaixo da seleção/pré-visualização, centralizado
+frame_desenho = ttk.Frame(frame_principal)
+frame_desenho.pack(pady=20)
+frame_desenho.pack_configure(anchor="center")
+
+canvas_turtle = tk.Canvas(frame_desenho, width=400, height=400)
+canvas_turtle.pack()
+
+screen = turtle.TurtleScreen(canvas_turtle)
+screen.bgcolor("white")
+
+t = turtle.RawTurtle(screen)
+t.speed(3)
+
+# Frame dos botões, abaixo do desenho, centralizado
+frame_botoes = ttk.Frame(frame_principal)
+frame_botoes.pack(pady=10)
+frame_botoes.pack_configure(anchor="center")
+
+btn_prever = ttk.Button(frame_botoes, text="Pré-visualizar", command=pre_visualizar)
+btn_prever.grid(row=0, column=0, padx=10)
+
+btn_desenhar = ttk.Button(frame_botoes, text="Desenhar", command=desenhar_forma)
+btn_desenhar.grid(row=0, column=1, padx=10)
+
+btn_limpar = ttk.Button(frame_botoes, text="Limpar", command=limpar_desenho)
+btn_limpar.grid(row=0, column=2, padx=10)
+
+janela.mainloop()
